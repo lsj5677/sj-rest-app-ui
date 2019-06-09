@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Sign Up</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script language="javascript">
+
+
+function isEmpty(str) {
+   return (!str || 0 === str.trim().length);
+}
+
+function createUser()
+{
+   var first_name = document.getElementById("first_name").value;	
+   var last_name = document.getElementById("last_name").value;
+   var e_mail = document.getElementById("e_mail").value;
+   var password_one = document.getElementById("password_one").value;
+   var password_two = document.getElementById("password_two").value;
+
+   if (isEmpty(password_one))
+   {
+       alert("Password cannot be empty");
+       return;
+   }
+
+   if (password_one !== password_two)
+   {
+       alert("Passwords do not match");
+       return;
+   }
+
+   $.ajaxSetup({
+       "contentType": "application/json"
+   });
+   
+   var dataPayload = { "firstName": first_name, "lastName": last_name, "email": e_mail, "password": password_one };
+   
+   $.post('http://localhost:8080/sj-rest-app/users', JSON.stringify(dataPayload))
+           .done(function (response) {
+        	   document.getElementById("first_name").value="";
+        	   document.getElementById("last_name").value="";
+        	   document.getElementById("e_mail").value="";
+               document.getElementById("password_one").value="";
+               document.getElementById("password_two").value="";
+               
+               if (response["email"] !== "")
+               {
+                   $("#not-successful-result").attr("style", "display: none !important;");
+                   $("#successful-result").attr("style", "display: block !important;");
+
+               } else {
+                   $("#successful-result").attr("style", "display: none !important;");
+                   $("#not-successful-result").attr("style", "display: block !important;");
+               }
+
+           });
+}
+
+</script>
+
+</head>
+<body>
+
+       <div id="successful-result" style="display:none">Your account is created</div>
+       <div id="not-successful-result" style="display:none">Could not create user</div>
+
+       <form>
+       	   First name <input type="text" id="first_name" /><br/>
+       	   Last name <input type="text" id="last_name" /><br/>
+       	   E-mail <input type="email" id="e_mail" /><br/>
+           password: <input type="password" id="password_one"/><br/>
+           Retype password: <input type="password" id="password_two"/><br/>
+           <input type="button" value="Submit" onclick="javascript:createUser()"/>
+       </form>
+
+</body>
+</html>
